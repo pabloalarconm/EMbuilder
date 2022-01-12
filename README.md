@@ -1,2 +1,2 @@
-# EMB
-Python-based YARRRML builder for mapping templates
+# **EMB** -- **Etemenanki Builder**
+### YARRRML builder for mapping templates
