@@ -1,0 +1,5 @@
+include requirements.txt
+include README.md
+include embuilder/builder.py
+include embuilder/__init__.py
+include setup.py
