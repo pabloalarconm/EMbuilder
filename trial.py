@@ -8,8 +8,29 @@ prefixes = dict(
   this = "http://marks.test/this/" ,
   dc = "http://purl.org/dc/elements/1.1/")
 
-triplets = [["http://www.subject.org/","http://www.predicate.org/","http://www.object.org/", "iri"],
-                ["http://www.subject1.org/","http://www.predicate2.org/","http://www.object3.org/", "iri"]]
+
+triplets = [
+
+# sio nodes
+["this:$(pid)_$(uniqid)#ID","sio:denotes","this:$(pid)_$(uniqid)#Role","iri"],
+["this:$(pid)_$(uniqid)#Entity","sio:has-role","this:$(pid)_$(uniqid)#Role","iri"],
+["this:$(pid)_$(uniqid)#Role","sio:is-realized-in","this:$(pid)_$(uniqid)#Process","iri"],
+["this:$(pid)_$(uniqid)#Process","sio:has-output","this:$(pid)_$(uniqid)#Output","iri"],
+["this:$(pid)_$(uniqid)#Output","sio:refers-to","this:$(pid)_$(uniqid)#Attribute","iri"],
+["this:$(pid)_$(uniqid)#Entity","sio:has-attribute","this:$(pid)_$(uniqid)#Attribute","iri"],
+
+# sio types
+["this:$(pid)_$(uniqid)#ID","rdf:type","sio:identifier","iri"],
+["this:$(pid)_$(uniqid)#Entity","rdf:type","sio:person","iri"],
+["this:$(pid)_$(uniqid)#Role","rdf:type","sio:role","iri"],
+["this:$(pid)_$(uniqid)#Process","rdf:type","sio:process","iri"],
+["this:$(pid)_$(uniqid)#Output","rdf:type","sio:information-content-entity","iri"],
+["this:$(pid)_$(uniqid)#Attribute","rdf:type","sio:attribute","iri"],
+
+# data
+["this:$(pid)_$(uniqid)#Output","sio:has-value","$(datetime)","xsd:date"]]
+
+
 
 config = dict(
   source_name = "source_cde_test"
