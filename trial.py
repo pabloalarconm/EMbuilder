@@ -5,7 +5,7 @@ prefixes = dict(
   rdfs = "http://www.w3.org/2000/01/rdf-schema#" ,
   obo = "http://purl.obolibrary.org/obo/" ,
   sio = "http://semanticscience.org/resource/" ,
-  dc = "http://purl.org/dc/elements/1.1/",
+  xsd = "http://www.w3.org/2001/XMLSchema#",
   this = "http://my_example.com/")
 
 

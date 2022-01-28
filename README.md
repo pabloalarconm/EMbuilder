@@ -1,11 +1,7 @@
 # **EMbuilder** -- **Etemenanki Builder**
 ### Python-controlled YARRRML builder for creating YAML based RML templates using Python.
 
-### **Instalation:** install locally or using Pypi repository.
-
-```
-python3 setup.py install
-```
+### **Instalation:** install it locally ```python3 setup.py install``` or using Pypi repository.
 
 ```
 pip install EMbuilder
@@ -21,7 +17,7 @@ prefixes = dict(
   rdfs = "http://www.w3.org/2000/01/rdf-schema#" ,
   obo = "http://purl.obolibrary.org/obo/" ,
   sio = "http://semanticscience.org/resource/" ,
-  dc = "http://purl.org/dc/elements/1.1/",
+  xsd = "http://www.w3.org/2001/XMLSchema#",
   this = "http://my_example.com/")
 
 
