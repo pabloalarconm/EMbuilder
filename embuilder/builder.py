@@ -61,6 +61,9 @@ class EMB():
                                       datatype = e[3]))]))  # OBJECT'S TYPE
 
           stamp = milisec() + "_" + self.config["source_name"] # Creating a unique name for each object using timestamp and source_name 
+          if e[3] == "iri":
+            triplet_map["name_node"]["predicateobject"][0]["objects"]["type"] = triplet_map["name_node"]["predicateobject"][0]["objects"].pop("datatype") # rename name_mode using an unique name per node
+
           triplet_map[stamp] = triplet_map.pop("name_node") # rename name_mode using an unique name per node
           mapping_dict["mapping"].update(triplet_map) # append dict into dict
           
