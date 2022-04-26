@@ -1,5 +1,5 @@
 # **EMbuilder** -- **Etemenanki Builder**
-### Python-controlled YARRRML builder for creating YAML based RML templates using Python.
+### Python-controlled YARRRML and ShEx builder for creating YAML-based Semantic artefcts using Python.
 
 ### **Instalation:** install it locally ```python3 setup.py install``` or using Pypi repository.
 
@@ -24,23 +24,23 @@ prefixes = dict(
 triplets = [
 
 # sio nodes
-["this:$(pid)_$(uniqid)#ID","sio:denotes","this:$(pid)_$(uniqid)#Role","iri"],
-["this:$(pid)_$(uniqid)#Entity","sio:has-role","this:$(pid)_$(uniqid)#Role","iri"],
-["this:$(pid)_$(uniqid)#Role","sio:is-realized-in","this:$(pid)_$(uniqid)#Process","iri"],
-["this:$(pid)_$(uniqid)#Process","sio:has-output","this:$(pid)_$(uniqid)#Output","iri"],
-["this:$(pid)_$(uniqid)#Output","sio:refers-to","this:$(pid)_$(uniqid)#Attribute","iri"],
-["this:$(pid)_$(uniqid)#Entity","sio:has-attribute","this:$(pid)_$(uniqid)#Attribute","iri"],
+["this:$(pid)_$(uniqid)_ID","sio:denotes","this:$(pid)_$(uniqid)_Role","iri"],
+["this:$(pid)_$(uniqid)_Entity","sio:has-role","this:$(pid)_$(uniqid)_Role","iri"],
+["this:$(pid)_$(uniqid)_Role","sio:is-realized-in","this:$(pid)_$(uniqid)_Process","iri"],
+["this:$(pid)_$(uniqid)_Process","sio:has-output","this:$(pid)_$(uniqid)_Output","iri"],
+["this:$(pid)_$(uniqid)_Output","sio:refers-to","this:$(pid)_$(uniqid)_Attribute","iri"],
+["this:$(pid)_$(uniqid)_Entity","sio:has-attribute","this:$(pid)_$(uniqid)_Attribute","iri"],
 
 # sio types
-["this:$(pid)_$(uniqid)#ID","rdf:type","sio:identifier","iri"],
-["this:$(pid)_$(uniqid)#Entity","rdf:type","sio:person","iri"],
-["this:$(pid)_$(uniqid)#Role","rdf:type","sio:role","iri"],
-["this:$(pid)_$(uniqid)#Process","rdf:type","sio:process","iri"],
-["this:$(pid)_$(uniqid)#Output","rdf:type","sio:information-content-entity","iri"],
-["this:$(pid)_$(uniqid)#Attribute","rdf:type","sio:attribute","iri"],
+["this:$(pid)_$(uniqid)_ID","rdf:type","sio:identifier","iri"],
+["this:$(pid)_$(uniqid)_Entity","rdf:type","$(datetime)","iri"],
+["this:$(pid)_$(uniqid)_Role","rdf:type","sio:role","iri"],
+["this:$(pid)_$(uniqid)_Process","rdf:type","sio:process","iri"],
+["this:$(pid)_$(uniqid)_Output","rdf:type","sio:information-content-entity","iri"],
+["this:$(pid)_$(uniqid)_Attribute","rdf:type","sio:attribute","iri"],
 
 # data
-["this:$(pid)_$(uniqid)#Output","sio:has-value","$(datetime)","xsd:date"]]
+["this:$(pid)_$(uniqid)_Output","sio:has-value","$(datetime)","xsd:date"]]
 
 
 
@@ -53,7 +53,11 @@ config = dict(
   csv_name = "source_1" # parameter only needed in case you pick "csv" as configuration
 )
 
-yarrrml = EMB(config)
-test = yarrrml.transform(prefixes, triplets)
+build = EMB(config, prefixes,triplets)
+
+test = build.transform_ShEx("this")
+test2 = build.transform_YARRRML()
+
 print(test)
+print(test2)
 ```
