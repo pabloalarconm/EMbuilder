@@ -1,13 +1,14 @@
 # **EMbuilder** -- **Etemenanki Builder**
-### Python-controlled YARRRML and ShEx builder for creating YAML-based Semantic artefcts using Python.
 
-### **Instalation:** install it locally ```python3 setup.py install``` or using Pypi repository.
+### Python3 based template builder for Semantic Web transformation. YARRRML (YAML -based RDF Mapping Language), OBDA (Ontology Based Database Acccess) and ShEx (Shape Expression) validator can be generatad using this package.
+
+### **Instalation:** install it locally using ```python3 setup.py install``` or using Pypi repository.
 
 ```
 pip install EMbuilder
 ```
 ### **Example:** 
-### Use [trial.py](https://github.com/pabloalarconm/EMbuilder/blob/main/trial.py) as a trial for creating your templates:
+### Use [trial.py](https://github.com/pabloalarconm/EMbuilder/blob/main/trial.py) as a use case for creating your templates:
 
 ```python
 from embuilder.builder import EMB
@@ -33,7 +34,7 @@ triplets = [
 
 # sio types
 ["this:$(pid)_$(uniqid)_ID","rdf:type","sio:identifier","iri"],
-["this:$(pid)_$(uniqid)_Entity","rdf:type","$(datetime)","iri"],
+["this:$(pid)_$(uniqid)_Entity","rdf:type","sio:person","iri"],
 ["this:$(pid)_$(uniqid)_Role","rdf:type","sio:role","iri"],
 ["this:$(pid)_$(uniqid)_Process","rdf:type","sio:process","iri"],
 ["this:$(pid)_$(uniqid)_Output","rdf:type","sio:information-content-entity","iri"],
@@ -55,9 +56,12 @@ config = dict(
 
 build = EMB(config, prefixes,triplets)
 
-test = build.transform_ShEx("this")
+test = build.transform_ShEx("this") # Define your basic URI as a parameter
 test2 = build.transform_YARRRML()
+test3 = build.transform_OBDA()
+
 
 print(test)
 print(test2)
+print(test3)
 ```

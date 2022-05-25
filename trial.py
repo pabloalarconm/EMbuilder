@@ -21,7 +21,7 @@ triplets = [
 
 # sio types
 ["this:$(pid)_$(uniqid)_ID","rdf:type","sio:identifier","iri"],
-["this:$(pid)_$(uniqid)_Entity","rdf:type","$(datetime)","iri"],
+["this:$(pid)_$(uniqid)_Entity","rdf:type","sio:person","iri"],
 ["this:$(pid)_$(uniqid)_Role","rdf:type","sio:role","iri"],
 ["this:$(pid)_$(uniqid)_Process","rdf:type","sio:process","iri"],
 ["this:$(pid)_$(uniqid)_Output","rdf:type","sio:information-content-entity","iri"],
@@ -45,6 +45,9 @@ build = EMB(config, prefixes,triplets)
 
 test = build.transform_ShEx("this")
 test2 = build.transform_YARRRML()
+test3 = build.transform_OBDA()
+
 
 print(test)
 print(test2)
+print(test3)

@@ -193,3 +193,65 @@ class EMB():
             end = "\n" + "} ;" + "\n"
             self.all = self.all + end
         return self.all
+
+    def transform_OBDA(self):
+        """
+        Transform your triplets and prefixes inputs into OBDA (Ontology-Based Database Access).
+        """
+        self.amaia_OBDA = ""
+        self.tree = dict() # Reset tree object
+        self.triplets_curated = list()
+
+        # Prefixes:
+        self.amaia_OBDA = self.amaia_OBDA + "[PrefixDeclaration]" + "\n"
+        for k,v in self.prefixes.items():
+            prefix = k + ":" + "\t" + v
+            self.amaia_OBDA = self.amaia_OBDA + prefix + "\n"
+
+        # Triplets preproccesing:
+        for quad in self.triplets:
+            s,p,o,d = quad
+
+            if '$(' in s:   # Change reference syntax to OBDA
+                s_curated = s.replace('$(', '{')
+                s_curated = s_curated.replace(")" , "}")
+            else:
+                s_curated = s
+
+            if p == "rdf:type": # Turn rdf:type into "a" statement
+                p_curated = "a"
+            else:
+                p_curated = p
+
+            if '$(' in o:   # Change reference syntax to OBDA 
+                o_curated = o.replace('$(', '{')
+                o_curated = o_curated.replace(")" , "}")
+            else:
+                o_curated = o
+
+            triplet = [s_curated,p_curated,o_curated,d]
+            self.triplets_curated.append(triplet) # Append curated triplets
+
+        # X-tree object
+        self.tree = self.xmas_tree(self.triplets_curated,"YARRRML") # Use same structure than YARRRML
+
+        # OBDA build
+        self.amaia_OBDA = self.amaia_OBDA + "\n" + "[MappingDeclaration] @collection [[" + "\n"
+        for t in self.tree.items():
+            self.amaia_OBDA = self.amaia_OBDA + "mappingId"	+ "\t" + self.config["source_name"] + milisec() + "\n" # milisec for unique mappingId objects
+            self.amaia_OBDA = self.amaia_OBDA + "target" + "\t" + t[0]
+
+            for l in t[1]:
+                if not l[2] == "iri":
+                    l[2] = l[2].replace(" ", "") # TODO Check spec for string to solve this convertion
+                    l[2] = l[2].replace(":", "_") # TODO Check spec for string to solve this convertion
+                    self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + l[1] + "^^" + l[2] + " ;"
+                else:
+                    self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + l[1] + " ;"
+
+            self.amaia_OBDA = self.amaia_OBDA + " ."
+            self.amaia_OBDA = self.amaia_OBDA + "\n" + "source" + "\t" "SELECT * FROM mytable #ADD your QUERY HERE" + "\n" + "\n"
+
+        self.amaia_OBDA = self.amaia_OBDA + "]]" + "\n"
+        self.amaia_OBDA = self.amaia_OBDA.replace( "; .", ".")
+        return self.amaia_OBDA

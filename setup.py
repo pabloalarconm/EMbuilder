@@ -8,13 +8,13 @@ with open('requirements.txt') as f:
 
 setup(
     name="EMbuilder",
-    version="0.0.6",
+    version="0.0.8",
     packages=["embuilder"],
     author="Pablo Alarcón Moreno",
     author_email="pabloalarconmoreno@gmail.com",
     url="https://github.com/pabloalarconm/EMbuilder",
-    description="Etemenanki Builder -- Python-controlled YARRRML builder",
+    description="Etemenanki Builder -- Semantic implementation builder",
     license="MIT",
-    keywords=["YAML","YARRRML","RDF","ShEx","FAIR","EJP"]
+    keywords=["YARRRML","OBDA","RDF","ShEx","FAIR","EJP"]
     #long_description=readme
 )
