@@ -1,14 +1,19 @@
-# **EMbuilder** -- **Etemenanki Builder**
+# **EMbuilder** 
+## **Etemenanki Builder**
 
-### Python3 based template builder for Semantic Web transformation. YARRRML (YAML -based RDF Mapping Language), OBDA (Ontology Based Database Acccess) and ShEx (Shape Expression) validator can be generatad using this package.
+Python3 based template builder for Semantic Web transformation:
+* [**YARRRML** (YAML -based RDF Mapping Language)](https://rml.io/yarrrml/spec/)
+* **OBDA** (Ontology Based Database Acccess)
+* [**ShEx** (Shape Expression)](http://shex.io/shex-semantics/index.html)
 
-### **Instalation:** install it locally using ```python3 setup.py install``` or using Pypi repository.
+### **Instalation:** 
+Install it locally using ```python3 setup.py install``` or using Pypi repository.
 
 ```
 pip install EMbuilder
 ```
 ### **Example:** 
-### Use [trial.py](https://github.com/pabloalarconm/EMbuilder/blob/main/trial.py) as a use case for creating your templates:
+Use [trial.py](https://github.com/pabloalarconm/EMbuilder/blob/main/trial.py) as a use case for creating your templates:
 
 ```python
 from embuilder.builder import EMB

@@ -144,9 +144,17 @@ class EMB():
         for quad in self.triplets:
             s,p,o,d = quad
             if s.startswith(basicURI + ":" ): # Get rid of the whole URI, only focused on representative name's node
-                c_element = s[::-1].split("_")[0]
-                c_element = c_element[::-1]
-                s_curated = c_element.lower() + "Shape"
+                s_curated = s[::-1].partition(")")[0]
+                s_curated = s_curated.replace("_","")
+                s_curated = s_curated.replace("/","")
+                s_curated = s_curated[::-1]
+                s_curated = s_curated.lower() + "Shape"
+            elif s.startwith("$("):
+                s_curated = s.replace("$(","")
+                s_curated = s_curated.replace(")","")
+                s_curated = s_curated.replace("_","")
+                s_curated = s_curated.replace("/","")
+                s_curated = s_curated.lower() + "Shape"
             elif s.startswith("http"): # Right syntax in case of IRI
                 s_curated = "<" + s + ">"
             else:
@@ -161,9 +169,17 @@ class EMB():
                 o_curated = d
             else:
                 if o.startswith(basicURI + ":" ):
-                    c_element = o[::-1].split("_")[0]
-                    c_element = c_element[::-1]
-                    o_curated = "@:" + c_element.lower() + "Shape"
+                    o_curated = o[::-1].partition(")")[0]
+                    o_curated = o_curated.replace("_","")
+                    o_curated = o_curated.replace("/","")
+                    o_curated = o_curated[::-1]
+                    o_curated = "@:" + o_curated.lower() + "Shape"
+                elif o.startwith("$("):
+                    o_curated = o.replace("$(","")
+                    o_curated = o_curated.replace(")","")
+                    o_curated = o_curated.replace("_","")
+                    o_curated = o_curated.replace("/","")
+                    o_curated = "@:" + o_curated.lower() + "Shape"
                 elif "$(" in o and d == "iri":
                     o_curated = "IRI"
                 elif o.startswith("http"):
@@ -245,7 +261,7 @@ class EMB():
                 if not l[2] == "iri":
                     l[2] = l[2].replace(" ", "") # TODO Check spec for string to solve this convertion
                     l[2] = l[2].replace(":", "_") # TODO Check spec for string to solve this convertion
-                    self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + l[1] + "^^" + l[2] + " ;"
+                    self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + '"' + l[1]+ '"' + "^^" + l[2] + " ;"
                 else:
                     self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + l[1] + " ;"
 
