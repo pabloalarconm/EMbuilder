@@ -137,7 +137,11 @@ class EMB():
 
         # prefixes addtion:
         for k,v in self.prefixes.items():
-            prefix = "PREFIX " + k + ": <" + v + ">"
+            if not k == basicURI:
+                prefix = "PREFIX " + k + ": <" + v + ">"
+            else:
+                prefix = "PREFIX " + ": <" + v + ">"
+
             self.all = self.all + prefix + "\n"
 
         # triplets curation:
@@ -148,13 +152,13 @@ class EMB():
                 s_curated = s_curated.replace("_","")
                 s_curated = s_curated.replace("/","")
                 s_curated = s_curated[::-1]
-                s_curated = s_curated.lower() + "Shape"
-            elif s.startwith("$("):
+                s_curated = ":" + s_curated.lower() + "Shape"
+            elif s.startswith("$("):
                 s_curated = s.replace("$(","")
                 s_curated = s_curated.replace(")","")
                 s_curated = s_curated.replace("_","")
                 s_curated = s_curated.replace("/","")
-                s_curated = s_curated.lower() + "Shape"
+                s_curated = ":" + s_curated.lower() + "Shape"
             elif s.startswith("http"): # Right syntax in case of IRI
                 s_curated = "<" + s + ">"
             else:
@@ -174,7 +178,7 @@ class EMB():
                     o_curated = o_curated.replace("/","")
                     o_curated = o_curated[::-1]
                     o_curated = "@:" + o_curated.lower() + "Shape"
-                elif o.startwith("$("):
+                elif o.startswith("$("):
                     o_curated = o.replace("$(","")
                     o_curated = o_curated.replace(")","")
                     o_curated = o_curated.replace("_","")
