@@ -243,9 +243,11 @@ class EMB():
             else:
                 p_curated = p
 
-            if '$(' in o:   # Change reference syntax to OBDA 
+            if '$(' in o:   # Change reference syntax to OBDA
                 o_curated = o.replace('$(', '{')
                 o_curated = o_curated.replace(")" , "}")
+                if o.startswith("$(") and d == "iri":
+                    o_curated = "<" + o_curated + ">"
             else:
                 o_curated = o
 
