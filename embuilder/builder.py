@@ -147,18 +147,43 @@ class EMB():
         # triplets curation:
         for quad in self.triplets:
             s,p,o,d = quad
-            if s.startswith(basicURI + ":" ): # Get rid of the whole URI, only focused on representative name's node
-                s_curated = s[::-1].partition(")")[0]
-                s_curated = s_curated.replace("_","")
-                s_curated = s_curated.replace("/","")
-                s_curated = s_curated[::-1]
-                s_curated = ":" + s_curated.lower() + "Shape"
+            if s.startswith(basicURI + ":" ):
+                # Select shape's name removing the rest of the IRI:
+                s_curated = s.split(")")[-1]
+                s_list = s_curated.split('_')
+                if "" in s_list:
+                    s_list.remove("")
+                # Using standard to name the shape properly:
+                statement = ":"
+                if len(s_list) >= 2:
+                    statement = statement + s_list[0].lower()
+                    for sl in s_list[1:]:
+                        statement = statement + sl[0].upper() + sl[1:].lower()
+                    statement = statement + "Shape"
+                else:
+                    statement =  statement + s_list[-1].lower() + "Shape"
+                s_curated = statement
+
             elif s.startswith("$("):
+                # Removing data innput references:
                 s_curated = s.replace("$(","")
                 s_curated = s_curated.replace(")","")
-                s_curated = s_curated.replace("_","")
-                s_curated = s_curated.replace("/","")
-                s_curated = ":" + s_curated.lower() + "Shape"
+                
+                s_list = s_curated.split('_')
+                if "" in s_list:
+                    s_list.remove("")
+
+                # Using standard to name the shape properly:
+                statement = "@:"
+                if len(s_list) >= 2:
+                    statement = statement + s_list[0].lower()
+                    for sl in s_list[1:]:
+                        statement = statement + sl[0].upper() + sl[1:].lower()
+                    statement = statement + "Shape"
+                else:
+                    statement =  ":"+ s_list[-1].lower() + "Shape"
+                s_curated = statement
+
             elif s.startswith("http"): # Right syntax in case of IRI
                 s_curated = "<" + s + ">"
             else:
@@ -173,23 +198,52 @@ class EMB():
                 o_curated = d
             else:
                 if o.startswith(basicURI + ":" ):
-                    o_curated = o[::-1].partition(")")[0]
-                    o_curated = o_curated.replace("_","")
-                    o_curated = o_curated.replace("/","")
-                    o_curated = o_curated[::-1]
-                    o_curated = "@:" + o_curated.lower() + "Shape"
+                    # Select shape's name removing the rest of the IRI:
+                    o_curated = o.split(")")[-1]
+                    o_list = o_curated.split('_')
+                    if "" in o_list:
+                        o_list.remove("")
+
+                    # Using standard to name the shape properly:
+                    statement = "@:"
+                    if len(o_list) >= 2:
+                        statement = statement + o_list[0].lower()
+                        for ol in o_list[1:]:
+                            statement = statement + ol[0].upper() + ol[1:].lower()
+                        statement = statement + "Shape"
+                    else:
+                        statement =  statement + o_list[-1].lower() + "Shape"
+                    o_curated = statement
+
                 elif o.startswith("$("):
+                    # Removing data input references:
                     o_curated = o.replace("$(","")
                     o_curated = o_curated.replace(")","")
-                    o_curated = o_curated.replace("_","")
-                    o_curated = o_curated.replace("/","")
-                    o_curated = "@:" + o_curated.lower() + "Shape"
+        
+                    o_list = o_curated.split('_')
+                    if "" in o_list:
+                        o_list.remove("")
+
+                    # Using standard to name the shape properly:
+                    statement = "@:"
+                    if len(o_list) >= 2:
+                        statement = statement + o_list[0].lower()
+                        for ol in o_list[1:]:
+                            statement = statement + ol[0].upper() + ol[1:].lower()
+                        statement = statement + "Shape"
+                    else:
+                        statement =  statement + o_list[-1].lower() + "Shape"
+
+                    o_curated = statement
+
                 elif "$(" in o and d == "iri":
                     o_curated = "IRI"
                 elif o.startswith("http"):
                     o_curated = "IRI"
                 else:
                     o_curated = o
+            if p_curated == "rdfs:label" and d == "xsd:string" and self.config["configuration"] == "ejp":
+                o_curated = "xsd:string?"
             
             triplet = [s_curated,p_curated,o_curated]
             self.triplets_curated.append(triplet) # Append curated triplets
@@ -198,21 +252,22 @@ class EMB():
         self.tree = self.xmas_tree(self.triplets_curated,"ShEx") # Transform your data into a subject-sorted dictionary
 
         # triplets into ShEx:
-        for s in self.tree:
-            subj= "\n" + s + " IRI {"
+        for s in self.tree.items():
+            
+            subj= "\n" + s[0] + " IRI {"
             self.all = self.all + subj
-            for p,o in self.tree[s].items():
-                if o.startswith("@") or o.startswith("xsd"):
-                    pred_obj = "\n" + "\t" + p + " " + o + " ;"
-                elif o == "IRI":
-                    pred_obj = "\n" + "\t" + p + " " + o + " ;"
+            # for p,o in self.tree.items():
+            for l in s[1]:
+                if l[1].startswith("@") or l[1].startswith("xsd") or l[1] == "IRI":
+                    pred_obj = "\n" + "\t" + l[0] + " " + l[1] + " ;"
                 else:
-                    pred_obj = "\n" + "\t" + p + " [" + o + "]" + " ;"
+                    pred_obj = "\n" + "\t" + l[0] + " [" + l[1] + "]" + " ;"
                 self.all = self.all + pred_obj
             self.all = self.all[:-1]
-            end = "\n" + "} ;" + "\n"
+            end = "\n" + "}" + "\n"
             self.all = self.all + end
         return self.all
+
 
     def transform_OBDA(self):
         """
@@ -265,8 +320,6 @@ class EMB():
 
             for l in t[1]:
                 if not l[2] == "iri":
-                    l[2] = l[2].replace(" ", "") # TODO Check spec for string to solve this convertion
-                    l[2] = l[2].replace(":", "_") # TODO Check spec for string to solve this convertion
                     self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + '"' + l[1]+ '"' + "^^" + l[2] + " ;"
                 else:
                     self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + l[1] + " ;"
