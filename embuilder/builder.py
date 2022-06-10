@@ -330,3 +330,103 @@ class EMB():
         self.amaia_OBDA = self.amaia_OBDA + "]]" + "\n"
         self.amaia_OBDA = self.amaia_OBDA.replace( "; .", ".")
         return self.amaia_OBDA
+        
+    def transform_SPARQL(self, basicURI):
+
+        self.amaia_SPARQL = ""
+        # Prefixes:
+        for k,v in self.prefixes.items():
+            self.amaia_SPARQL = self.amaia_SPARQL + "PREFIX " + k + ": " + "<" + v + ">" + "\n"
+
+        self.amaia_SPARQL = self.amaia_SPARQL + "SELECT DISTINCT *" + "\n" + "WHERE {" + "\n"
+
+        # Triplets preproccesing:
+        for quad in self.triplets:
+            s,p,o,d = quad
+
+            # For subject:
+            if s.startswith("$("): # If subject is a data input reference:
+                s_curated = s.replace("$(","")
+                s_curated = s_curated.replace(")","")
+
+                #Removing separators from the text, only words
+                s_list = s_curated.split('_')
+                if "" in s_list:
+                    s_list.remove("")
+                
+                # creating the proper statement:
+                statement = "?"
+                for sl in s_list:
+                    statement = statement + sl.lower()
+                s_curated = statement      
+
+            elif s.startswith(basicURI + ":"): # If subject start with the basic URI (most probable)
+                if "$(" in s: # Contains any uniqid inside URL:
+                    s_curated = s.split(")")[-1] # Get only the last part without references
+                if "/" in s_curated:
+                    s_curated = s.split("/")[-1] # Get only last part without /
+
+                s_list = s_curated.split('_')
+                if "" in s_list:
+                    s_list.remove("")
+
+                # creating the proper statement:
+                statement = "?"
+                for sl in s_list:
+                    statement = statement + sl.lower()
+                s_curated = statement 
+
+            elif s.startswith("http"):
+                s_curated = "<" + s + ">"
+            else:
+                s_curated = s 
+            
+            # For predicate:
+            if p == "rdf:type": # Turn rdf:type into "a" statement
+                p_curated = "a"
+            else:
+                p_curated = p
+
+            # For object and datatype:
+            if not str(d) == "iri": # At non-IRI objects, all you need is the datatype
+                o_curated = d
+            else:
+                if o.startswith("$("): # If subject is a data input reference:
+                    o_curated = o.replace("$(","")
+                    o_curated = o_curated.replace(")","")
+
+                    #Removing separators from the text, only words
+                    o_list = o_curated.split('_')
+                    if "" in o_list:
+                        o_list.remove("")
+
+                    # creating the proper statement:
+                    statement = "?"
+                    for ol in o_list:
+                        statement = statement + ol.lower()
+                    o_curated = statement 
+
+                elif o.startswith(basicURI + ":"): # If subject start with the basic URI (most probable)
+                    if "$(" in o: # Contains any uniqid inside URL:
+                        o_curated = o.split(")")[-1] # Get only the last part without references
+                    if "/" in o_curated:
+                        o_curated = o.split("/")[-1] # Get only last part without /
+
+                    o_list = o_curated.split('_')
+                    if "" in o_list:
+                        o_list.remove("")
+
+                    # creating the proper statement:
+                    statement = "?"
+                    for ol in o_list:
+                        statement = statement + ol.lower()
+                    o_curated = statement 
+                    
+                elif o.startswith("http"):
+                    o_curated = "<" + o + ">"
+                else:
+                    o_curated = o 
+            
+            self.amaia_SPARQL = self.amaia_SPARQL + "\t" +  s_curated + " " + p_curated + " " + o_curated + " ." + "\n"
+        self.amaia_SPARQL = self.amaia_SPARQL + "}" + "\n"
+        return self.amaia_SPARQL
