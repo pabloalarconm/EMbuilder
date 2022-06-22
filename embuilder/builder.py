@@ -12,13 +12,21 @@ class EMB():
         self.tree = dict()
 
         # Check all objects are fine:
-        if not isinstance(config and prefixes, dict):
-            sys.exit("Both configuration and prefixes objects must be a dictionary. Please, check your input objects")
-        if not isinstance(triplets, list):
-            sys.exit("Triplets objects must be a list. Please, check your input objects")
-        for i in self.triplets:
-            if not len(i) == 4:
-                sys.exit("Triplet object must be formed by four string based list [subject, predicate, object, datatype]. Please, check your input objects")
+        # if not isinstance(config and prefixes, dict):
+        #     sys.exit("Both configuration and prefixes objects must be a dictionary. Please, check your input objects")
+        # if not isinstance(triplets, list):
+        #     sys.exit("Triplets objects must be a list. Please, check your input objects")
+        # for i in self.triplets:
+        #     if not len(i) == 4:
+        #         sys.exit("Triplet object must be formed by four string based list [subject, predicate, object, datatype]. Please, check your input objects")
+        # print(self.prefixes)
+        # print(type(self.prefixes))
+
+        # print(self.triplets)
+        # print(type(self.triplets))
+
+        # print(self.config)
+        # print(type(self.config))
 
     
     def xmas_tree(self, data, model):

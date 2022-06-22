@@ -1,3 +1,4 @@
 embuilder/__pycache__
 dist
 EMbuilder.egg-info
+embuilder/data/__pycache__
