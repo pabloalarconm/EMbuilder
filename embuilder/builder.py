@@ -19,36 +19,15 @@ class EMB():
         # for i in self.triplets:
         #     if not len(i) == 4:
         #         sys.exit("Triplet object must be formed by four string based list [subject, predicate, object, datatype]. Please, check your input objects")
-        # print(self.prefixes)
-        # print(type(self.prefixes))
-
-        # print(self.triplets)
-        # print(type(self.triplets))
-
-        # print(self.config)
-        # print(type(self.config))
-
-    
-    def xmas_tree(self, data, model):
+    def structured_quads(self, data):
         """
-        Transform list-based idependant triplets as [spo],[spo],[spo] into tree-based triplets organized by common Subject. For example: s[po],[po]
-        
-        This transformation will allow to reduce redundant structures at your resulting artefact.
-
-        Depending on your input data: [spo] or [spod], it will work based on your choices using model parameter.
+        Input: List of lists of quadruplets: [[s p o d], [s p o d], ...]
+        Transform your input into tree-based triplets organized by common Subject. For example: s[pod],[pod]
+        Output: self.tree() with your new structured quadruplets
         """
-        if model == "ShEx":
-            for tri in data:
-                s, p, o = tri
-                if not s in self.tree.keys():
-                    map = dict()
-                    map.update({s:{p:o}}) 
-                    self.tree.update(map)
-                else:
-                    po = {p:o} 
-                    self.tree[s].update(po)
-            return self.tree
-        elif model == "YARRRML":
+        if type(data) is not list:
+            sys.exit("You must provide a list of lists with your quadruplets inside: [[s p o d], [s p o d], ...]")
+        else:
             for quad in data:
                 s, p, o ,d = quad
                 if not s in self.tree.keys():
@@ -59,8 +38,6 @@ class EMB():
                     po = [p,o,d] 
                     self.tree[s].append(po)
             return self.tree
-        else:
-            sys.exit("No correct model tag was added to pick the transformation pathway")
 
     def transform_YARRRML(self):
         """
@@ -103,7 +80,7 @@ class EMB():
             sys.exit('You must provide a configuration parameter: use "ejp" for using this template for EJP-RDs workflow, or "csv" for defining CSV data source')
 
         # mapping object:
-        self.tree = self.xmas_tree(self.triplets,"YARRRML")
+        self.tree = self.structured_quads(self.triplets)
 
         mapping_dict = dict(mapping = dict())
         for t in self.tree.items():
@@ -135,13 +112,22 @@ class EMB():
         document = yaml.dump(self.main_dict)
         return document
 
+    def extract_information(self, term):
+        if term.startswith("$("): term = term.replace("$(","").replace(")","") # If the term is a data reference, remove the symbols
+        end_of_term = term.split("}")[-1] # split the term (normally URI) in case in contain any {} reference
+        end_of_term = end_of_term.split(")")[-1] # split the term (normally URI) in case in contain any $() reference
+        end_of_term_list = end_of_term.split('_') # Create a list with all word from the URI
+        if "" in end_of_term_list: end_of_term_list.remove("") # Remove empty words
+        if len(end_of_term_list) == 0 : end_of_term_list[0] = "UndeterminedName" # In case of none, create a provisional name
+        return end_of_term_list
+
     def transform_ShEx(self, basicURI):
         """
         Transform your input triplets and prefixes into Shape Expression (ShEx) based on your configuration input dictionary.
         """
         self.triplets_curated = list()
         self.tree = dict() # Reset tree object
-        self.all = ""
+        self.result_ShEx = ""
 
         # prefixes addtion:
         for k,v in self.prefixes.items():
@@ -150,17 +136,16 @@ class EMB():
             else:
                 prefix = "PREFIX " + ": <" + v + ">"
 
-            self.all = self.all + prefix + "\n"
+            self.result_ShEx = self.result_ShEx + prefix + "\n"
 
         # triplets curation:
         for quad in self.triplets:
             s,p,o,d = quad
-            if s.startswith(basicURI + ":" ):
+
+            # SUBJECT
+            if s.startswith(basicURI + ":" ) or s.startswith(":") or s.startswith("$("):
                 # Select shape's name removing the rest of the IRI:
-                s_curated = s.split(")")[-1]
-                s_list = s_curated.split('_')
-                if "" in s_list:
-                    s_list.remove("")
+                s_list = self.extract_information(s)
                 # Using standard to name the shape properly:
                 statement = ":"
                 if len(s_list) >= 2:
@@ -172,45 +157,24 @@ class EMB():
                     statement =  statement + s_list[-1].lower() + "Shape"
                 s_curated = statement
 
-            elif s.startswith("$("):
-                # Removing data innput references:
-                s_curated = s.replace("$(","")
-                s_curated = s_curated.replace(")","")
-                
-                s_list = s_curated.split('_')
-                if "" in s_list:
-                    s_list.remove("")
-
-                # Using standard to name the shape properly:
-                statement = "@:"
-                if len(s_list) >= 2:
-                    statement = statement + s_list[0].lower()
-                    for sl in s_list[1:]:
-                        statement = statement + sl[0].upper() + sl[1:].lower()
-                    statement = statement + "Shape"
-                else:
-                    statement =  ":"+ s_list[-1].lower() + "Shape"
-                s_curated = statement
-
             elif s.startswith("http"): # Right syntax in case of IRI
                 s_curated = "<" + s + ">"
             else:
                 s_curated = s
 
+            # PREDICATE
             if p == "rdf:type": # Turn rdf:type into "a" statement
                 p_curated = "a"
             else:
                 p_curated = p
 
+            # OBJECT
             if not str(d) == "iri": # At non-IRI objects, all you need is the datatype
                 o_curated = d
             else:
-                if o.startswith(basicURI + ":" ):
+                if o.startswith(basicURI + ":" ) or o.startswith("$("):
                     # Select shape's name removing the rest of the IRI:
-                    o_curated = o.split(")")[-1]
-                    o_list = o_curated.split('_')
-                    if "" in o_list:
-                        o_list.remove("")
+                    o_list = self.extract_information(o)
 
                     # Using standard to name the shape properly:
                     statement = "@:"
@@ -223,89 +187,73 @@ class EMB():
                         statement =  statement + o_list[-1].lower() + "Shape"
                     o_curated = statement
 
-                elif o.startswith("$("):
-                    # Removing data input references:
-                    o_curated = o.replace("$(","")
-                    o_curated = o_curated.replace(")","")
-        
-                    o_list = o_curated.split('_')
-                    if "" in o_list:
-                        o_list.remove("")
-
-                    # Using standard to name the shape properly:
-                    statement = "@:"
-                    if len(o_list) >= 2:
-                        statement = statement + o_list[0].lower()
-                        for ol in o_list[1:]:
-                            statement = statement + ol[0].upper() + ol[1:].lower()
-                        statement = statement + "Shape"
-                    else:
-                        statement =  statement + o_list[-1].lower() + "Shape"
-
-                    o_curated = statement
-
-                elif "$(" in o and d == "iri":
+                elif "$(" in o and d == "iri": # For those non-static domain-specific ontological classes like HPO, Orphanet, etc
                     o_curated = "IRI"
+
                 elif o.startswith("http"):
                     o_curated = "IRI"
                 else:
                     o_curated = o
+
+            # optional labels
             if p_curated == "rdfs:label" and d == "xsd:string" and self.config["configuration"] == "ejp":
                 o_curated = "xsd:string?"
             
-            triplet = [s_curated,p_curated,o_curated]
+            triplet = [s_curated,p_curated,o_curated,d]
             self.triplets_curated.append(triplet) # Append curated triplets
 
-        # individual triplets transformation into xmas_tree:
-        self.tree = self.xmas_tree(self.triplets_curated,"ShEx") # Transform your data into a subject-sorted dictionary
+        # individual triplets transformation into structured quads:
+        self.tree = self.structured_quads(self.triplets_curated) # Transform your data into a subject-sorted dictionary
 
         # triplets into ShEx:
         for s in self.tree.items():
-            
             subj= "\n" + s[0] + " IRI {"
-            self.all = self.all + subj
+            self.result_ShEx = self.result_ShEx + subj
             # for p,o in self.tree.items():
             for l in s[1]:
                 if l[1].startswith("@") or l[1].startswith("xsd") or l[1] == "IRI":
                     pred_obj = "\n" + "\t" + l[0] + " " + l[1] + " ;"
                 else:
                     pred_obj = "\n" + "\t" + l[0] + " [" + l[1] + "]" + " ;"
-                self.all = self.all + pred_obj
-            self.all = self.all[:-1]
+                self.result_ShEx = self.result_ShEx + pred_obj
+            self.result_ShEx = self.result_ShEx[:-1]
             end = "\n" + "}" + "\n"
-            self.all = self.all + end
-        return self.all
+            self.result_ShEx = self.result_ShEx + end
+        return self.result_ShEx
 
 
     def transform_OBDA(self):
         """
         Transform your triplets and prefixes inputs into OBDA (Ontology-Based Database Access).
         """
-        self.amaia_OBDA = ""
+        self.result_OBDA = ""
         self.tree = dict() # Reset tree object
         self.triplets_curated = list()
 
         # Prefixes:
-        self.amaia_OBDA = self.amaia_OBDA + "[PrefixDeclaration]" + "\n"
+        self.result_OBDA = self.result_OBDA + "[PrefixDeclaration]" + "\n"
         for k,v in self.prefixes.items():
             prefix = k + ":" + "\t" + v
-            self.amaia_OBDA = self.amaia_OBDA + prefix + "\n"
+            self.result_OBDA = self.result_OBDA + prefix + "\n"
 
         # Triplets preproccesing:
         for quad in self.triplets:
             s,p,o,d = quad
 
+            # SUBJECT:
             if '$(' in s:   # Change reference syntax to OBDA
                 s_curated = s.replace('$(', '{')
                 s_curated = s_curated.replace(")" , "}")
             else:
                 s_curated = s
 
+            # PREDICATE:
             if p == "rdf:type": # Turn rdf:type into "a" statement
                 p_curated = "a"
             else:
                 p_curated = p
 
+            # OBJECT:
             if '$(' in o:   # Change reference syntax to OBDA
                 o_curated = o.replace('$(', '{')
                 o_curated = o_curated.replace(")" , "}")
@@ -317,72 +265,52 @@ class EMB():
             triplet = [s_curated,p_curated,o_curated,d]
             self.triplets_curated.append(triplet) # Append curated triplets
 
-        # X-tree object
-        self.tree = self.xmas_tree(self.triplets_curated,"YARRRML") # Use same structure than YARRRML
+        # individual triplets transformation into structured quads
+        self.tree = self.structured_quads(self.triplets_curated)
 
         # OBDA build
-        self.amaia_OBDA = self.amaia_OBDA + "\n" + "[MappingDeclaration] @collection [[" + "\n"
+        self.result_OBDA = self.result_OBDA + "\n" + "[MappingDeclaration] @collection [[" + "\n"
         for t in self.tree.items():
-            self.amaia_OBDA = self.amaia_OBDA + "mappingId"	+ "\t" + self.config["source_name"] + milisec() + "\n" # milisec for unique mappingId objects
-            self.amaia_OBDA = self.amaia_OBDA + "target" + "\t" + t[0]
+            self.result_OBDA = self.result_OBDA + "mappingId"	+ "\t" + self.config["source_name"] + milisec() + "\n" # milisec for unique mappingId objects
+            self.result_OBDA = self.result_OBDA + "target" + "\t" + t[0]
 
             for l in t[1]:
                 if not l[2] == "iri":
-                    self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + '"' + l[1]+ '"' + "^^" + l[2] + " ;"
+                    self.result_OBDA = self.result_OBDA +  " " + l[0] + " " + '"' + l[1]+ '"' + "^^" + l[2] + " ;"
                 else:
-                    self.amaia_OBDA = self.amaia_OBDA +  " " + l[0] + " " + l[1] + " ;"
+                    self.result_OBDA = self.result_OBDA +  " " + l[0] + " " + l[1] + " ;"
 
-            self.amaia_OBDA = self.amaia_OBDA + " ."
-            self.amaia_OBDA = self.amaia_OBDA + "\n" + "source" + "\t" "SELECT * FROM mytable #ADD your QUERY HERE" + "\n" + "\n"
+            self.result_OBDA = self.result_OBDA + " ."
+            self.result_OBDA = self.result_OBDA + "\n" + "source" + "\t" "SELECT * FROM mytable #ADD your QUERY HERE" + "\n" + "\n"
 
-        self.amaia_OBDA = self.amaia_OBDA + "]]" + "\n"
-        self.amaia_OBDA = self.amaia_OBDA.replace( "; .", ".")
-        return self.amaia_OBDA
-        
+        self.result_OBDA = self.result_OBDA + "]]" + "\n"
+        self.result_OBDA = self.result_OBDA.replace( "; .", ".")
+        return self.result_OBDA
+
+
     def transform_SPARQL(self, basicURI):
 
-        self.amaia_SPARQL = ""
+        self.result_SPARQL = ""
         # Prefixes:
         for k,v in self.prefixes.items():
-            self.amaia_SPARQL = self.amaia_SPARQL + "PREFIX " + k + ": " + "<" + v + ">" + "\n"
+            self.result_SPARQL = self.result_SPARQL + "PREFIX " + k + ": " + "<" + v + ">" + "\n"
 
-        self.amaia_SPARQL = self.amaia_SPARQL + "SELECT DISTINCT *" + "\n" + "WHERE {" + "\n"
+        self.result_SPARQL = self.result_SPARQL + "SELECT DISTINCT *" + "\n" + "WHERE {" + "\n"
 
         # Triplets preproccesing:
         for quad in self.triplets:
             s,p,o,d = quad
 
             # For subject:
-            if s.startswith("$("): # If subject is a data input reference:
-                s_curated = s.replace("$(","")
-                s_curated = s_curated.replace(")","")
+            if s.startswith(basicURI + ":") or s.startswith("$("):
+                # Select shape's name removing the rest of the IRI:
+                s_list = self.extract_information(s)
 
-                #Removing separators from the text, only words
-                s_list = s_curated.split('_')
-                if "" in s_list:
-                    s_list.remove("")
-                
-                # creating the proper statement:
+                # Using standard to name the query properly:
                 statement = "?"
                 for sl in s_list:
                     statement = statement + sl.lower()
-                s_curated = statement      
-
-            elif s.startswith(basicURI + ":"): # If subject start with the basic URI (most probable)
-                if "$(" in s: # Contains any uniqid inside URL:
-                    s_curated = s.split(")")[-1] # Get only the last part without references
-                if "/" in s_curated:
-                    s_curated = s.split("/")[-1] # Get only last part without /
-
-                s_list = s_curated.split('_')
-                if "" in s_list:
-                    s_list.remove("")
-
-                # creating the proper statement:
-                statement = "?"
-                for sl in s_list:
-                    statement = statement + sl.lower()
-                s_curated = statement 
+                s_curated = statement
 
             elif s.startswith("http"):
                 s_curated = "<" + s + ">"
@@ -399,32 +327,11 @@ class EMB():
             if not str(d) == "iri": # At non-IRI objects, all you need is the datatype
                 o_curated = d
             else:
-                if o.startswith("$("): # If subject is a data input reference:
-                    o_curated = o.replace("$(","")
-                    o_curated = o_curated.replace(")","")
+                if o.startswith(basicURI + ":") or o.startswith("$("): # If subject is a data input reference:
+                    # Select shape's name removing the rest of the IRI:
+                    o_list = self.extract_information(o)
 
-                    #Removing separators from the text, only words
-                    o_list = o_curated.split('_')
-                    if "" in o_list:
-                        o_list.remove("")
-
-                    # creating the proper statement:
-                    statement = "?"
-                    for ol in o_list:
-                        statement = statement + ol.lower()
-                    o_curated = statement 
-
-                elif o.startswith(basicURI + ":"): # If subject start with the basic URI (most probable)
-                    if "$(" in o: # Contains any uniqid inside URL:
-                        o_curated = o.split(")")[-1] # Get only the last part without references
-                    if "/" in o_curated:
-                        o_curated = o.split("/")[-1] # Get only last part without /
-
-                    o_list = o_curated.split('_')
-                    if "" in o_list:
-                        o_list.remove("")
-
-                    # creating the proper statement:
+                    # Using standard to name the query properly:
                     statement = "?"
                     for ol in o_list:
                         statement = statement + ol.lower()
@@ -435,6 +342,6 @@ class EMB():
                 else:
                     o_curated = o 
             
-            self.amaia_SPARQL = self.amaia_SPARQL + "\t" +  s_curated + " " + p_curated + " " + o_curated + " ." + "\n"
-        self.amaia_SPARQL = self.amaia_SPARQL + "}" + "\n"
-        return self.amaia_SPARQL
+            self.result_SPARQL = self.result_SPARQL + "\t" +  s_curated + " " + p_curated + " " + o_curated + " ." + "\n"
+        self.result_SPARQL = self.result_SPARQL + "}" + "\n"
+        return self.result_SPARQL
