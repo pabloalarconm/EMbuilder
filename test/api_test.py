@@ -2,15 +2,14 @@ import requests
 from os import listdir, getcwd
 from os.path import isfile, join
 import sys
-from pyperseo.functions import get_files
 import json
 
-mypath = getcwd() + "/embuilder/data/"
+mypath = getcwd() + "/data/"
 
 def post_call(route,body,mypath,filename,format):
     headers={"accept": "application/json", "Content-Type": "application/json"}
     try:
-        response = requests.post(url = "http://127.0.0.1:8000/"+ route, headers = headers,json = body)
+        response = requests.post(url = "http://0.0.0.0:8000/"+ route, headers = headers,json = body)
         response.encoding = response.apparent_encoding
         try:
             f = open(mypath + filename + "." + format, "x")
