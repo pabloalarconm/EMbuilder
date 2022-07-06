@@ -11,7 +11,7 @@ class EMB():
         self.main_dict = dict()
         self.tree = dict()
 
-        # Check all objects are fine:
+        # # Check all objects are fine:
         # if not isinstance(config and prefixes, dict):
         #     sys.exit("Both configuration and prefixes objects must be a dictionary. Please, check your input objects")
         # if not isinstance(triplets, list):
@@ -19,6 +19,8 @@ class EMB():
         # for i in self.triplets:
         #     if not len(i) == 4:
         #         sys.exit("Triplet object must be formed by four string based list [subject, predicate, object, datatype]. Please, check your input objects")
+
+    
     def structured_quads(self, data):
         """
         Input: List of lists of quadruplets: [[s p o d], [s p o d], ...]
@@ -121,17 +123,18 @@ class EMB():
         if len(end_of_term_list) == 0 : end_of_term_list[0] = "UndeterminedName" # In case of none, create a provisional name
         return end_of_term_list
 
-    def transform_ShEx(self, basicURI):
+    def transform_ShEx(self):
         """
         Transform your input triplets and prefixes into Shape Expression (ShEx) based on your configuration input dictionary.
         """
         self.triplets_curated = list()
         self.tree = dict() # Reset tree object
         self.result_ShEx = ""
+        if not self.config["basicURI"]: sys.exit("basicURI parameter must to be provoded at configuration input")
 
         # prefixes addtion:
         for k,v in self.prefixes.items():
-            if not k == basicURI:
+            if not k == self.config["basicURI"]:
                 prefix = "PREFIX " + k + ": <" + v + ">"
             else:
                 prefix = "PREFIX " + ": <" + v + ">"
@@ -143,7 +146,7 @@ class EMB():
             s,p,o,d = quad
 
             # SUBJECT
-            if s.startswith(basicURI + ":" ) or s.startswith(":") or s.startswith("$("):
+            if s.startswith(self.config["basicURI"] + ":" ) or s.startswith(":") or s.startswith("$("):
                 # Select shape's name removing the rest of the IRI:
                 s_list = self.extract_information(s)
                 # Using standard to name the shape properly:
@@ -172,7 +175,7 @@ class EMB():
             if not str(d) == "iri": # At non-IRI objects, all you need is the datatype
                 o_curated = d
             else:
-                if o.startswith(basicURI + ":" ) or o.startswith("$("):
+                if o.startswith(self.config["basicURI"] + ":" ) or o.startswith("$("):
                     # Select shape's name removing the rest of the IRI:
                     o_list = self.extract_information(o)
 
@@ -288,8 +291,9 @@ class EMB():
         return self.result_OBDA
 
 
-    def transform_SPARQL(self, basicURI):
-
+    def transform_SPARQL(self):
+        
+        if not self.config["basicURI"]: sys.exit("basicURI parameter must to be provoded at configuration input")
         self.result_SPARQL = ""
         # Prefixes:
         for k,v in self.prefixes.items():
@@ -302,7 +306,7 @@ class EMB():
             s,p,o,d = quad
 
             # For subject:
-            if s.startswith(basicURI + ":") or s.startswith("$("):
+            if s.startswith(self.config["basicURI"] + ":") or s.startswith("$("):
                 # Select shape's name removing the rest of the IRI:
                 s_list = self.extract_information(s)
 
@@ -327,7 +331,7 @@ class EMB():
             if not str(d) == "iri": # At non-IRI objects, all you need is the datatype
                 o_curated = d
             else:
-                if o.startswith(basicURI + ":") or o.startswith("$("): # If subject is a data input reference:
+                if o.startswith(self.config["basicURI"] + ":") or o.startswith("$("): # If subject is a data input reference:
                     # Select shape's name removing the rest of the IRI:
                     o_list = self.extract_information(o)
 

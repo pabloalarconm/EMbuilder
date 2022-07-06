@@ -1,4 +1,4 @@
-from embuilder.builder import EMB
+#from embuilder.builder import EMB
 
 prefixes = dict(
   rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ,
@@ -41,13 +41,13 @@ config = dict(
   csv_name = "source_1" # parameter only needed in case you pick "csv" as configuration
 )
 
-build = EMB(config, prefixes,triplets)
+# build = EMB(config, prefixes,triplets)
 
-test = build.transform_ShEx("this")
-test2 = build.transform_YARRRML()
-test3 = build.transform_OBDA()
+# test = build.transform_ShEx("this")
+# test2 = build.transform_YARRRML()
+# test3 = build.transform_OBDA()
 
 
-print(test)
-print(test2)
-print(test3)
+# print(test)
+# print(test2)
+# print(test3)
