@@ -13,7 +13,7 @@
 pip install EMbuilder
 ```
 ### **Use case:** 
-It consumes JSON object with all **prefixes**, **triplets** (including object's **datatype**) and **configuration** parameter as data input. You can use this example (below) or you can use [test.py](https://github.com/pabloalarconm/EMbuilder/blob/main/test.py) as an use case for creating your templates based on one of [EJP-RD Common Data Elements](https://github.com/ejp-rd-vp/CDE-semantic-model):
+It consumes JSON object with all **prefixes**, **triplets** (including object's **datatype**) and **configuration** parameter as data input. You can use this example (below) or you can use [test.py](https://github.com/pabloalarconm/EMbuilder/blob/main/test/test.py) as an use case for creating your templates based on one of [EJP-RD Common Data Elements](https://github.com/ejp-rd-vp/CDE-semantic-model):
 
 ```python
 from embuilder.builder import EMB
@@ -62,6 +62,13 @@ print(test_obda)
 test_sparql = yarrrml.transform_SPARQL()
 print(test_sparql)
 ```
+### Documentation:
+##### **Configuration parameter**:
+* `source_name`: (mandatory for **YARRRML** and **OBDA** representations) used to create each inidividual template object.
+* `configuration`: (mandatory for **YARRRML** and **ShEx** representations) used to define a certain workflow to operate. `ejp` in case of custom transformation required to fit with EJP-RD CDE-in-a-box workflow requirements, if not, define as `default`.
+* `csv_name`: (mandatory in case of `configuration: default` for **YARRRML** representation) used to define input CSV name. 
+* `basicURI`: (mandatory for **ShEx** and **SPARQL** representations) used to identify basic URI prefix to create proper representations. 
+
 
 ### API usage:
 
