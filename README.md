@@ -72,7 +72,7 @@ print(test_sparql)
 
 ### API usage:
 
-This module was implemented as a Web service using FastAPI and Docker to make it run. You can obtain the Docker Image from [Dockerhub](https://hub.docker.com/repository/docker/pabloalarconm/embuilder).
+This module was implemented as a Web service using **FastAPI** and Docker to make it run. You can obtain the Docker Image from [Dockerhub](https://hub.docker.com/repository/docker/pabloalarconm/embuilder).
 
 Pull the image `pabloalarconm/embuilder` and run it!
 
@@ -81,4 +81,4 @@ docker run -p 8000:8000 pabloalarconm/embuilder
 ```
 
 
-Its configured to run at your localhost, port 8000. Please check [http://localhost:8000/docs](http://127.0.0.1:8000/docs) to interact with Swagger UI **documentation** of each funcion. You know more about it configuration, here is the [`Dockerfile`](https://github.com/pabloalarconm/EMbuilder/blob/main/Dockerfile) for this implementation.
+Its configured to run at your localhost, port 8000. Please check [http://localhost:8000/docs](http://127.0.0.1:8000/docs) to interact with Swagger UI documentation of each funcion. To know more about Docker configuration, you can find here current [`Dockerfile`](https://github.com/pabloalarconm/EMbuilder/blob/main/Dockerfile) for this implementation.
