@@ -52,11 +52,11 @@ class EMB():
             prefixes_dict = dict(prefixes=self.prefixes) # create prefixes object
             prefixes_dict["prefixes"]["this"] = str("|||BASE|||")
             self.main_dict.update(prefixes_dict) # append prefixes object into main
-        elif self.config["configuration"] == "csv":
+        elif self.config["configuration"] == "default":
             prefixes_dict = dict(prefixes=self.prefixes) # create prefixes object
             self.main_dict.update(prefixes_dict) # append prefixes object into main
         else:
-            sys.exit('You must provide a configuration parameter: use "ejp" for using this template for EJP-RDs workflow, or "csv" for defining CSV data source')
+            sys.exit('You must provide a configuration parameter: use "ejp" for using this template for EJP-RDs workflow, or "default" for defining CSV data source')
 
         # sources object:
         if self.config["configuration"] == "ejp":
@@ -67,7 +67,7 @@ class EMB():
                                     iterator = str("$"))))
             sources_dict["sources"][self.config["source_name"]] = sources_dict["sources"].pop("source_prov") # rename source_name using an unique name from config
             self.main_dict.update(sources_dict)
-        elif self.config["configuration"] == "csv":
+        elif self.config["configuration"] == "default":
             if "csv_name" in self.config:
                 sources_dict = dict(sources= dict(
                                     source_prov=dict(
@@ -79,7 +79,7 @@ class EMB():
             else:
                 sys.exit('You must provide a csv_name parameter for defining the name of your CSV data source')
         else:
-            sys.exit('You must provide a configuration parameter: use "ejp" for using this template for EJP-RDs workflow, or "csv" for defining CSV data source')
+            sys.exit('You must provide a configuration parameter: use "ejp" for using this template for EJP-RDs workflow, or "default" for defining CSV data source')
 
         # mapping object:
         self.tree = self.structured_quads(self.triplets)
@@ -130,7 +130,7 @@ class EMB():
         self.triplets_curated = list()
         self.tree = dict() # Reset tree object
         self.result_ShEx = ""
-        if not self.config["basicURI"]: sys.exit("basicURI parameter must to be provoded at configuration input")
+        if not self.config["basicURI"]: sys.exit("basicURI parameter must to be provided at configuration input")
 
         # prefixes addtion:
         for k,v in self.prefixes.items():
@@ -293,7 +293,7 @@ class EMB():
 
     def transform_SPARQL(self):
         
-        if not self.config["basicURI"]: sys.exit("basicURI parameter must to be provoded at configuration input")
+        if not self.config["basicURI"]: sys.exit("basicURI parameter must to be provided at configuration input")
         self.result_SPARQL = ""
         # Prefixes:
         for k,v in self.prefixes.items():
