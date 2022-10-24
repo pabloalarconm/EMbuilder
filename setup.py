@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="EMbuilder",
-    version="0.1.0",
+    version="0.1.1",
     packages=["embuilder"],
     author="Pablo Alarcón Moreno",
     author_email="pabloalarconmoreno@gmail.com",

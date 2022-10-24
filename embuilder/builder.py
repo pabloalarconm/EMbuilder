@@ -16,9 +16,6 @@ class EMB():
             sys.exit("Both configuration and prefixes objects must be a dictionary. Please, check your input objects")
         if not isinstance(triplets, list):
             sys.exit("Triplets objects must be a list. Please, check your input objects")
-        for i in self.triplets:
-            if not len(i) == 4:
-                sys.exit("Triplet object must be formed by four string based list [subject, predicate, object, datatype]. Please, check your input objects")
 
     
     def structured_quads(self, data):
@@ -31,15 +28,27 @@ class EMB():
             sys.exit("You must provide a list of lists with your quadruplets inside: [[s p o d], [s p o d], ...]")
         else:
             for quad in data:
-                s, p, o ,d = quad
-                if not s in self.tree.keys():
-                    map = dict()
-                    map.update({s:[[p,o,d]]}) 
-                    self.tree.update(map)
+                if len(quad) == 4:
+                    s, p, o ,d = quad
+                    if not s in self.tree.keys():
+                        map = dict()
+                        map.update({s:[[p,o,d]]}) 
+                        self.tree.update(map)
+                    else:
+                        po = [p,o,d] 
+                        self.tree[s].append(po)
+                elif len(quad) == 5:
+                    s, p, o ,d, g = quad
+                    if not s in self.tree.keys():
+                        map = dict()
+                        map.update({s:[[p,o,d,g]]})
+                        self.tree.update(map)
+                    else:
+                        po = [p,o,d,g] 
+                        self.tree[s].append(po)
                 else:
-                    po = [p,o,d] 
-                    self.tree[s].append(po)
-            return self.tree
+                    sys.exit("Triplet object {quad} must be formed by four string based list [subject, predicate, object, datatype, graph(OPTIONAL)]. Please, check your input objects")
+        return self.tree
 
     def transform_YARRRML(self):
         """
@@ -91,6 +100,8 @@ class EMB():
                             subjects = t[0], # SUBJECT
                             predicateobject = []))
             for l in t[1]:
+                if len(l) == 4:
+                    s_mapp["name_node"].update({"graph":l[3]})
                 if l[2] == "iri":
                     pod_map = dict(
                                 predicate = l[0], # PREDICATE
@@ -349,3 +360,14 @@ class EMB():
             self.result_SPARQL = self.result_SPARQL + "\t" +  s_curated + " " + p_curated + " " + o_curated + " ." + "\n"
         self.result_SPARQL = self.result_SPARQL + "}" + "\n"
         return self.result_SPARQL
+
+
+# import json
+
+# with open("../test/data/data_test.json") as json_file:
+#     data = json.load(json_file)
+
+# yarrrml = EMB(data["config"], data["prefixes"],data["triplets"])
+
+# test_yarrrml = yarrrml.transform_YARRRML()
+# print(test_yarrrml)

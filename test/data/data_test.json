@@ -9,49 +9,56 @@
     },
 
 "triplets" : [
-    ["this:$(pid)_$(uniqid)_ID","sio:SIO_000020","this:$(pid)_$(uniqid)_Birthdate_Role","iri"],
-    ["this:$(pid)_$(uniqid)_Entity","sio:SIO_000228","this:$(pid)_$(uniqid)_Birthdate_Role","iri"],
-    ["this:$(pid)_$(uniqid)_Entity","sio:SIO_000008","this:$(pid)_$(uniqid)_Birthdate_Attribute","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Role","sio:SIO_000356","this:$(pid)_$(uniqid)_Birthdate_Process","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Process","sio:SIO_000229","this:$(pid)_$(uniqid)_Birthdate_Output","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Output","sio:SIO_000628","this:$(pid)_$(uniqid)_Birthdate_Attribute","iri"],
-
-    ["this:$(pid)_$(uniqid)_ID","sio:SIO_000020","this:$(pid)_$(uniqid)_Sex_Role","iri"],
-    ["this:$(pid)_$(uniqid)_Entity","sio:SIO_000228","this:$(pid)_$(uniqid)_Sex_Role","iri"],
-    ["this:$(pid)_$(uniqid)_Entity","sio:SIO_000008","this:$(pid)_$(uniqid)_Sex_Attribute","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Role","sio:SIO_000356","this:$(pid)_$(uniqid)_Sex_Process","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Process","sio:SIO_000229","this:$(pid)_$(uniqid)_Sex_Output","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Output","sio:SIO_000628","this:$(pid)_$(uniqid)_Sex_Attribute","iri"],
-
-    ["this:$(pid)_$(uniqid)_ID","rdf:type","sio:SIO_000115","iri"],
-    ["this:$(pid)_$(uniqid)_Entity","rdf:type","sio:SIO_000498","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Role","rdf:type","sio:SIO_000016","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Role","rdf:type","obo:OBI_0000093","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Process","rdf:type","sio:SIO_000006","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Output","rdf:type","sio:SIO_000015","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Attribute","rdf:type","sio:SIO_000614","iri"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Attribute","rdf:type","obo:NCIT_C68615","iri"],
-
-    ["this:$(pid)_$(uniqid)_Sex_Role","rdf:type","sio:SIO_000016","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Role","rdf:type","obo:OBI_0000093","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Process","rdf:type","sio:SIO_000006","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Output","rdf:type","sio:SIO_000015","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Attribute","rdf:type","sio:SIO_000614","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Attribute","rdf:type","$(sexURI)","iri"],
-    ["this:$(pid)_$(uniqid)_Sex_Attribute","rdf:type","obo:NCIT_C28421","iri"],
-
-    ["this:$(pid)_$(uniqid)_Birthdate_Role","rdfs:label","Role: Patient for age assessment","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Process","rdfs:label","Process: age measuring process","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Output","rdfs:label","Output type: Birth date","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Attribute","rdfs:label","Attribute type: Birth date","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Sex_Role","rdfs:label","Role: Patient for gender assessment","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Sex_Process","rdfs:label","Process: sex measuring process","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Sex_Output","rdfs:label","Output type: $(sexLabel)","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Sex_Attribute","rdfs:label","Attribute type: $(sexLabel)","xsd:string"],
-
-    ["this:$(pid)_$(uniqid)_ID","sio:SIO_000300","$(pid)","xsd:string"],
-    ["this:$(pid)_$(uniqid)_Birthdate_Output","sio:SIO_000300","$(birthdate)","xsd:date"],
-    ["this:$(pid)_$(uniqid)_Sex_Output","sio:SIO_000300","$(sexLabel)","xsd:string"]],
+    ["this:$(pid)_ID","sio:SIO_000020","this:$(pid)_$(uniqid)_Role","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_Entity","sio:SIO_000228","this:$(pid)_$(uniqid)_Role","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_Entity","sio:SIO_000008","this:$(pid)_$(uniqid)_Attribute","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Role","sio:SIO_000356","this:$(pid)_$(uniqid)_Process","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Process","sio:SIO_000229","this:$(pid)_$(uniqid)_Output","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Output","sio:SIO_000628","this:$(pid)_$(uniqid)_Attribute","iri", "this:$(chronoid)_Chronoid"],
+    
+    ["this:$(pid)_ID","rdf:type","sio:SIO_000115","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_Entity","rdf:type","sio:SIO_000498","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Role","rdf:type","sio:SIO_000016","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Role","rdf:type","obo:OBI_0000093","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Process","rdf:type","sio:SIO_000006","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Process","rdf:type","$(processURI)","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Output","rdf:type","sio:SIO_000015","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Output","rdf:type","$(outputURI)","iri", "this:$(chronoid)_Chronoid"],
+    
+    ["this:$(pid)_$(uniqid)_Attribute","rdf:type","sio:SIO_000614","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Attribute","rdf:type","$(attributeURI)","iri", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Attribute","rdf:type","$(valueAttributeIRI)","iri", "this:$(chronoid)_Chronoid"],
+    
+    
+    ["this:$(pid)_ID","rdfs:label","Identifier","xsd:string", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_Person","rdfs:label","Person","xsd:string", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Role","rdfs:label","Patient role","xsd:string", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Process","rdfs:label","$(model) measurement process","xsd:string", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Output","rdfs:label","$(model) measurement output","xsd:string", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Attribute","rdfs:label","$(model) attribute","xsd:string", "this:$(chronoid)_Chronoid"],
+    
+    
+    ["this:$(pid)_ID","sio:SIO_000300","$(pid)","xsd:string", "this:$(chronoid)_Chronoid"],
+    ["this:$(pid)_$(uniqid)_Output","sio:SIO_000300","$(valueOutput)","$(datatype)","this:$(chronoid)_Chronoid"],
+    
+    
+    
+    
+    ["this:$(chronoid)_Chronoid","sio:SIO_000680","this:$(chronoid)_Startdate","iri"],
+    ["this:$(chronoid)_Chronoid","sio:SIO_000681","this:$(chronoid)_Enddate","iri"],
+    
+    ["this:$(chronoid)_Startdate","rdfs:label","$(model) startdate: $(startdate)","xsd:string"],
+    ["this:$(chronoid)_Enddate","rdfs:label","$(model) enddate: $(enddate)","xsd:string"],
+    
+    ["this:$(chronoid)_Startdate","rdf:type","sio:SIO_000031","iri"],
+    ["this:$(chronoid)_Enddate","rdf:type","sio:SIO_000032","iri"],
+    
+    ["this:$(chronoid)_Startdate","sio:SIO_000300","$(startdate)","xsd:date"],
+    ["this:$(chronoid)_Enddate","sio:SIO_000300","$(enddate)","xsd:date"],
+    
+    ["this:$(chronoid)_Chronoid","sio:SIO_000068","this:$(pid)_Timeline","iri"],
+    ["this:$(pid)_Timeline","sio:SIO_000332","$(pid)","xsd:string"]
+    ],
 
 "config" : {
     "source_name" : "source_cde_test",
