@@ -1,6 +1,7 @@
 import yaml
 import sys
-from pyperseo.functions import milisec
+# from pyperseo.functions import milisec
+from perseo.main import milisec
 
 
 class EMB():
